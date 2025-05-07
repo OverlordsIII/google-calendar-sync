@@ -27,10 +27,11 @@ import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.Set;
 
+// https://google-calendar-sync-cpnj.onrender.com
 @SpringBootApplication
 public class GoogleCalendarSyncApplication {
 
-	public static final Path CONFIG_HOME_DIRECTORY = Paths.get(System.getProperty("user.home")).resolve("WhenIWorkCalendarSyncConfig");
+	public static final Path CONFIG_HOME_DIRECTORY = Paths.get("");
 
 	public static final Path CREDENTIALS_FILE_PATH = CONFIG_HOME_DIRECTORY.resolve("private_config.json");
 
