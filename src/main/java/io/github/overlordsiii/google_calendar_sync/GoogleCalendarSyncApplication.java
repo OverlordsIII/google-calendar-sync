@@ -37,9 +37,9 @@ import java.util.UUID;
 @SpringBootApplication
 public class GoogleCalendarSyncApplication {
 
-	public static final Path CONFIG_HOME_DIRECTORY = Paths.get("etc", "secrets");
+	public static final Path CONFIG_HOME_DIRECTORY = Paths.get("tmp");
 
-	public static final Path CREDENTIALS_FILE_PATH = CONFIG_HOME_DIRECTORY.resolve("private_config.json");
+	public static final Path CREDENTIALS_FILE_PATH = Paths.get("etc", "secret").resolve("private_config.json");
 
 	public static final Path TOKENS_DIRECTORY_PATH = CONFIG_HOME_DIRECTORY.resolve("tokens");
 
