@@ -12,7 +12,10 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.calendar.model.Channel;
+import io.github.overlordsiii.google_calendar_sync.config.JsonHandler;
 import io.github.overlordsiii.google_calendar_sync.config.PropertiesHandler;
+import io.github.overlordsiii.google_calendar_sync.utils.GoogleCalendarUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.boot.SpringApplication;
@@ -25,7 +28,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 // https://google-calendar-sync-cpnj.onrender.com
 
 @SpringBootApplication
@@ -49,21 +54,51 @@ public class GoogleCalendarSyncApplication {
 			.builder()
 			.addConfigOption("secondary-calendar-id", "")
 			.addConfigOption("primary-calendar-id", "")
+			.addConfigOption("sync-token", "")
+			.addConfigOption("webhook-id", "")
 			.setFileName("calendar-sync.properties")
 			.build();
 
-	public static void main(String[] args) throws GeneralSecurityException, IOException {
+	public static final JsonHandler EVENT_CONFIG = new JsonHandler("event-config.json");
+
+	public static void main(String[] args) throws IOException, GeneralSecurityException {
 		initConfigs();
 		final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 		SERVICE =
 				new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
 						.setApplicationName("WhenIWorkCalendarSync")
 						.build();
+		createAndUpdateCopyCalendar();
+		registerWebhook(CONFIG.getConfigOption("primary-calendar-id"), "https://google-calendar-sync-cpnj.onrender.com");
 		SpringApplication.run(GoogleCalendarSyncApplication.class, args);
+	}
+
+	private static void createAndUpdateCopyCalendar() throws IOException {
+		String cbeId = GoogleCalendarUtil.getCBECalendarId();
+		CONFIG.setConfigOption("primary-calendar-id", cbeId);
+		CONFIG.reload();
+		String secondaryCalendar = GoogleCalendarUtil.getOrCreateCopy(cbeId);
+		CONFIG.setConfigOption("secondary-calendar-id", secondaryCalendar);
+		CONFIG.reload();
+	}
+
+	public static void registerWebhook(String calendarId, String webhookUrl) throws IOException {
+		String channelId = UUID.randomUUID().toString();
+
+		Channel channel = new Channel()
+				.setId(channelId)
+				.setType("web_hook")
+				.setAddress(webhookUrl);
+
+		Channel responseChannel = SERVICE.events().watch(calendarId, channel).execute();
+
+		LOGGER.info("Webhook registered:");
+		LOGGER.info("Channel ID: " + responseChannel.getId());
 	}
 
 	private static void initConfigs() {
 		try {
+			EVENT_CONFIG.save();
 			if (!Files.exists(CONFIG_HOME_DIRECTORY)) {
 				Files.createDirectory(CONFIG_HOME_DIRECTORY);
 			} if (!Files.exists(TOKENS_DIRECTORY_PATH)) {
