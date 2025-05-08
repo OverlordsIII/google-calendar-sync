@@ -36,10 +36,12 @@ import java.util.UUID;
 // https://google-calendar-sync-cpnj.onrender.com
 @SpringBootApplication
 public class GoogleCalendarSyncApplication {
+	//TODO fix google auth in render
+	//TODO Use environment variables for primary-id, secondary-id, webhook-id
 
 	public static final Path CONFIG_HOME_DIRECTORY = Paths.get("tmp");
 
-	public static final Path CREDENTIALS_FILE_PATH = Paths.get("etc", "secret").resolve("private_config.json");
+	public static final Path CREDENTIALS_FILE_PATH = Paths.get("etc", "secrets").resolve("private_config.json");
 
 	public static final Path TOKENS_DIRECTORY_PATH = CONFIG_HOME_DIRECTORY.resolve("tokens");
 
