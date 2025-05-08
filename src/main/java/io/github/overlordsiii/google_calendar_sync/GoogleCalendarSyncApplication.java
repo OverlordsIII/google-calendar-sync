@@ -31,7 +31,7 @@ import java.util.Set;
 @SpringBootApplication
 public class GoogleCalendarSyncApplication {
 
-	public static final Path CONFIG_HOME_DIRECTORY = Paths.get("");
+	public static final Path CONFIG_HOME_DIRECTORY = Paths.get("etc", "secrets");
 
 	public static final Path CREDENTIALS_FILE_PATH = CONFIG_HOME_DIRECTORY.resolve("private_config.json");
 
