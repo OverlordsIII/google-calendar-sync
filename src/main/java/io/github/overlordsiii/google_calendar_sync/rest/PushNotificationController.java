@@ -17,23 +17,23 @@ public class PushNotificationController {
 // google should send push notification here
     @PostMapping("/")
     public void pushNotification(@RequestBody String message) throws IOException {
-        List<Event> changedEvents = GoogleCalendarUtil.getAllEvents(GoogleCalendarSyncApplication.CONFIG.getConfigOption("primary-calendar-id"), GoogleCalendarSyncApplication.CONFIG.getConfigOption("sync-token"));
+        List<Event> changedEvents = GoogleCalendarUtil.getAllEvents(System.getProperty("primary-calendar-id"), System.getProperty("sync-token"));
         for (Event event : changedEvents) {
             String status = event.getStatus();
             String primaryEventId = event.getId();
             if (status.contains("cancelled")) {
                 String secondaryEventId = GoogleCalendarSyncApplication.EVENT_CONFIG.getBase().get(primaryEventId).getAsString();
-                GoogleCalendarUtil.deleteEvent(GoogleCalendarSyncApplication.CONFIG.getConfigOption("secondary-calendar-id"), secondaryEventId);
+                GoogleCalendarUtil.deleteEvent(System.getProperty("secondary-calendar-id"), secondaryEventId);
                 GoogleCalendarSyncApplication.EVENT_CONFIG.getBase().remove(primaryEventId);
             } else if (!status.contains("cancelled") && event.getCreated().equals(event.getUpdated())) { // event was added
-                GoogleCalendarUtil.copyEventTo(GoogleCalendarSyncApplication.CONFIG.getConfigOption("secondary-calendar-id"), event);
+                GoogleCalendarUtil.copyEventTo(System.getProperty("secondary-calendar-id"), event);
                 GoogleCalendarSyncApplication.EVENT_CONFIG.save();
             } else {
                 // event was updated in some other way
                 // we are going to delete the existing event on secondary id and then copy the event over
                 String secondaryEventId = GoogleCalendarSyncApplication.EVENT_CONFIG.getBase().get(primaryEventId).getAsString();
-                GoogleCalendarUtil.deleteEvent(GoogleCalendarSyncApplication.CONFIG.getConfigOption("secondary-calendar-id"), secondaryEventId);
-                GoogleCalendarUtil.copyEventTo(GoogleCalendarSyncApplication.CONFIG.getConfigOption("secondary-calendar-id"), event);
+                GoogleCalendarUtil.deleteEvent(System.getProperty("secondary-calendar-id"), secondaryEventId);
+                GoogleCalendarUtil.copyEventTo(System.getProperty("secondary-calendar-id"), event);
                 GoogleCalendarSyncApplication.EVENT_CONFIG.save();
             }
         }

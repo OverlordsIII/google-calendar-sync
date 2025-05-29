@@ -17,7 +17,7 @@ import static io.github.overlordsiii.google_calendar_sync.GoogleCalendarSyncAppl
 public class GoogleCalendarUtil {
 
     public static String getOrCreateCopy(String cbeId) throws IOException {
-        String secondaryId = GoogleCalendarSyncApplication.CONFIG.getConfigOption("secondary-calendar-id");
+        String secondaryId = System.getProperty("secondary-calendar-id");
         if (secondaryId != null) {
             return secondaryId;
         }
@@ -48,8 +48,7 @@ public class GoogleCalendarUtil {
 
         if (cbeCalendarId != null) {
             GoogleCalendarSyncApplication.LOGGER.info("CBE-Calendar ID: " + cbeCalendarId);
-            GoogleCalendarSyncApplication.CONFIG.setConfigOption("primary-calendar-id", cbeCalendarId);
-            GoogleCalendarSyncApplication.CONFIG.save();
+            System.setProperty("primary-calendar-id", cbeCalendarId);
         }
 
         return cbeCalendarId;
@@ -78,8 +77,7 @@ public class GoogleCalendarUtil {
                 break;
             }
         }
-        GoogleCalendarSyncApplication.CONFIG.setConfigOption("sync-token", syncToken);
-        GoogleCalendarSyncApplication.CONFIG.save();
+        System.setProperty("sync-token", syncToken);
         return items;
     }
 

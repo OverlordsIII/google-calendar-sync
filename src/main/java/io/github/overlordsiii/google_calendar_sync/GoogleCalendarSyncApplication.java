@@ -14,7 +14,6 @@ import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Channel;
 import io.github.overlordsiii.google_calendar_sync.config.JsonHandler;
-import io.github.overlordsiii.google_calendar_sync.config.PropertiesHandler;
 import io.github.overlordsiii.google_calendar_sync.utils.GoogleCalendarUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -53,15 +52,6 @@ public class GoogleCalendarSyncApplication {
 
 	public static Calendar SERVICE;
 
-	public static final PropertiesHandler CONFIG = PropertiesHandler
-			.builder()
-			.addConfigOption("secondary-calendar-id", "")
-			.addConfigOption("primary-calendar-id", "")
-			.addConfigOption("sync-token", "")
-			.addConfigOption("webhook-id", "")
-			.setFileName("calendar-sync.properties")
-			.build();
-
 	public static final JsonHandler EVENT_CONFIG = new JsonHandler("event-config.json");
 
 	public static void main(String[] args) throws IOException, GeneralSecurityException {
@@ -72,17 +62,15 @@ public class GoogleCalendarSyncApplication {
 						.setApplicationName("WhenIWorkCalendarSync")
 						.build();
 		createAndUpdateCopyCalendar();
-		registerWebhook(CONFIG.getConfigOption("primary-calendar-id"), "https://google-calendar-sync-cpnj.onrender.com");
+		registerWebhook(System.getProperty("primary-calendar-id"), "https://google-calendar-sync-cpnj.onrender.com");
 		SpringApplication.run(GoogleCalendarSyncApplication.class, args);
 	}
 
 	private static void createAndUpdateCopyCalendar() throws IOException {
 		String cbeId = GoogleCalendarUtil.getCBECalendarId();
-		CONFIG.setConfigOption("primary-calendar-id", cbeId);
-		CONFIG.reload();
+		System.setProperty("primary-calendar-id", cbeId);
 		String secondaryCalendar = GoogleCalendarUtil.getOrCreateCopy(cbeId);
-		CONFIG.setConfigOption("secondary-calendar-id", secondaryCalendar);
-		CONFIG.reload();
+		System.setProperty("secondary-calendar-id", secondaryCalendar);
 	}
 
 	public static void registerWebhook(String calendarId, String webhookUrl) throws IOException {
