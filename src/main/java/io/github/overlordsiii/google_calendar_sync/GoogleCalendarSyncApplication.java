@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.UUID;
 // https://google-calendar-sync-cpnj.onrender.com
 
-// https://google-calendar-sync-cpnj.onrender.com
 @SpringBootApplication
 public class GoogleCalendarSyncApplication {
 	//TODO fix google auth in render
@@ -56,6 +55,7 @@ public class GoogleCalendarSyncApplication {
 
 	public static void main(String[] args) throws IOException, GeneralSecurityException {
 		initConfigs();
+		prepareTokenFile();
 		final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 		SERVICE =
 				new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
@@ -72,6 +72,21 @@ public class GoogleCalendarSyncApplication {
 		String secondaryCalendar = GoogleCalendarUtil.getOrCreateCopy(cbeId);
 		System.setProperty("secondary-calendar-id", secondaryCalendar);
 	}
+
+	private static void prepareTokenFile() throws IOException {
+		Path source = Paths.get("/etc/secrets/StoredCredential");
+
+		Path target = TOKENS_DIRECTORY_PATH.resolve("StoredCredential");
+
+		if (!Files.exists(TOKENS_DIRECTORY_PATH)) {
+			Files.createDirectories(TOKENS_DIRECTORY_PATH);
+		}
+
+		if (!Files.exists(target)) {
+			Files.copy(source, target);
+		}
+	}
+
 
 	public static void registerWebhook(String calendarId, String webhookUrl) throws IOException {
 		String channelId = UUID.randomUUID().toString();
