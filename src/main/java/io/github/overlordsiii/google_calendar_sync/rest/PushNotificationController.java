@@ -17,10 +17,14 @@ public class PushNotificationController {
 // google should send push notification here
     @PostMapping("/")
     public void pushNotification(@RequestBody String message) throws IOException {
+        System.out.println("Received push notification: " + message);
         List<Event> changedEvents = GoogleCalendarUtil.getAllEvents(GoogleCalendarSyncApplication.CONFIG.getConfigOption("primary-calendar-id"), GoogleCalendarSyncApplication.CONFIG.getConfigOption("sync-token"));
+        System.out.println("Number of changed events: " + changedEvents.size());
         for (Event event : changedEvents) {
             String status = event.getStatus();
+            System.out.println("Status: " + status);
             String primaryEventId = event.getId();
+            System.out.println("Primary event id: " + primaryEventId);
             if (status.contains("cancelled")) {
                 String secondaryEventId = GoogleCalendarSyncApplication.EVENT_CONFIG.getBase().get(primaryEventId).getAsString();
                 GoogleCalendarUtil.deleteEvent(GoogleCalendarSyncApplication.CONFIG.getConfigOption("secondary-calendar-id"), secondaryEventId);

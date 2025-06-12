@@ -24,9 +24,9 @@ public class PropertiesHandler {
         if (!Files.exists(CONFIG_HOME_DIRECTORY)) {
             try {
                 Files.createDirectory(CONFIG_HOME_DIRECTORY);
-                GoogleCalendarSyncApplication.LOGGER.info("Creating config directory at: \"" + CONFIG_HOME_DIRECTORY + "\"");
+                System.out.println("Creating config directory at: \"" + CONFIG_HOME_DIRECTORY + "\"");
             } catch (IOException e) {
-                GoogleCalendarSyncApplication.LOGGER.error("Error while creating config home directory at: \"" + CONFIG_HOME_DIRECTORY + "\"");
+                System.out.println("Error while creating config home directory at: \"" + CONFIG_HOME_DIRECTORY + "\"");
                 e.printStackTrace();
             }
         }
@@ -45,7 +45,7 @@ public class PropertiesHandler {
             load();
             save();
         } catch (IOException e) {
-            GoogleCalendarSyncApplication.LOGGER.error("Error while initializing Properties Config for file " + "\"" + propertiesPath + "\"" + "!");
+            System.out.println("Error while initializing Properties Config for file " + "\"" + propertiesPath + "\"" + "!");
             e.printStackTrace();
         }
 
@@ -197,7 +197,7 @@ public class PropertiesHandler {
 
             PropertiesHandler propertiesHandler = new PropertiesHandler(filename, configValues);
             propertiesHandler.initialize();
-            GoogleCalendarSyncApplication.LOGGER.info("Properties Handler with file name \"" + filename + "\" created on path \"" + propertiesHandler.propertiesPath + "\"");
+            System.out.println("Properties Handler with file name \"" + filename + "\" created on path \"" + propertiesHandler.propertiesPath + "\"");
             return propertiesHandler;
         }
     }

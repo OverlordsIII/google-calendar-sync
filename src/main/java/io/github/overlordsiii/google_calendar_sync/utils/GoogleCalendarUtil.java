@@ -18,7 +18,7 @@ public class GoogleCalendarUtil {
 
     public static String getOrCreateCopy(String cbeId) throws IOException {
         String secondaryId = GoogleCalendarSyncApplication.CONFIG.getConfigOption("secondary-calendar-id");
-        if (secondaryId != null) {
+        if (secondaryId != null && doesCalendarExist(secondaryId)) {
             return secondaryId;
         }
         com.google.api.services.calendar.model.Calendar calendar = new com.google.api.services.calendar.model.Calendar();
@@ -28,13 +28,22 @@ public class GoogleCalendarUtil {
         calendar = SERVICE.calendars().insert(calendar).execute();
 
         for (Event event : getAllEvents(cbeId, null)) {
-            GoogleCalendarSyncApplication.LOGGER.info("Copying event: " + event.getSummary());
+            System.out.println("Copying event: " + event.getSummary());
 
             copyEventTo(calendar.getId(), event);
         }
         GoogleCalendarSyncApplication.EVENT_CONFIG.save();
 
         return calendar.getId();
+    }
+
+    public static boolean doesCalendarExist(String cbeId) {
+        try {
+            SERVICE.calendars().get(cbeId).execute();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     public static String getCBECalendarId() throws IOException {
@@ -47,7 +56,7 @@ public class GoogleCalendarUtil {
         }
 
         if (cbeCalendarId != null) {
-            GoogleCalendarSyncApplication.LOGGER.info("CBE-Calendar ID: " + cbeCalendarId);
+            System.out.println("CBE-Calendar ID: " + cbeCalendarId);
             GoogleCalendarSyncApplication.CONFIG.setConfigOption("primary-calendar-id", cbeCalendarId);
             GoogleCalendarSyncApplication.CONFIG.save();
         }

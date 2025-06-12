@@ -29,9 +29,9 @@ public class JsonHandler {
         if (!Files.exists(CONFIG_HOME_DIRECTORY)) {
             try {
                 Files.createDirectory(CONFIG_HOME_DIRECTORY);
-                GoogleCalendarSyncApplication.LOGGER.info("Creating config directory at: \"" + CONFIG_HOME_DIRECTORY + "\"");
+                System.out.println("Creating config directory at: \"" + CONFIG_HOME_DIRECTORY + "\"");
             } catch (IOException e) {
-                GoogleCalendarSyncApplication.LOGGER.error("Error while creating config home directory at: \"" + CONFIG_HOME_DIRECTORY + "\"");
+                System.out.println("Error while creating config home directory at: \"" + CONFIG_HOME_DIRECTORY + "\"");
                 e.printStackTrace();
             }
         }

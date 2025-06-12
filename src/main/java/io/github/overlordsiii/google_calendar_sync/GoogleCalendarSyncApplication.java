@@ -68,9 +68,9 @@ public class GoogleCalendarSyncApplication {
 				new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
 						.setApplicationName("WhenIWorkCalendarSync")
 						.build();
+		SpringApplication.run(GoogleCalendarSyncApplication.class, args);
 		createAndUpdateCopyCalendar();
 		registerWebhook(CONFIG.getConfigOption("primary-calendar-id"), "https://google-calendar-sync-cpnj.onrender.com");
-		SpringApplication.run(GoogleCalendarSyncApplication.class, args);
 	}
 
 	private static void createAndUpdateCopyCalendar() throws IOException {
@@ -92,8 +92,8 @@ public class GoogleCalendarSyncApplication {
 
 		Channel responseChannel = SERVICE.events().watch(calendarId, channel).execute();
 
-		LOGGER.info("Webhook registered:");
-		LOGGER.info("Channel ID: " + responseChannel.getId());
+		System.out.println("Webhook registered:");
+		System.out.println("Channel ID: " + responseChannel.getId());
 	}
 
 	private static void initConfigs() {
